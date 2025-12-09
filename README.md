@@ -33,7 +33,7 @@ The dataset consists of hourly observations with the following structure:
 #### **UCM — Unobserved Components Model**
 - Implemented in **UCM.R**
 
-### ** Machine Learning Models (Python)**
+### ** Machine Learning Models **
 Several ML approaches were explored:
 
 - **LSTM neural network** (TensorFlow)  
