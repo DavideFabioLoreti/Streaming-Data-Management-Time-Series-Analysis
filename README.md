@@ -52,12 +52,12 @@ The final chosen model is the **LSTM**, and the corresponding predictions for th
 ---
 
 ##  Repository Structure
-/
-├── arima.R # ARIMA modelling (R)
-├── UCM.R # Unobserved Components Model (R)
-├── ML.py # Machine learning forecasting (Python)
-├── 865309_YYMMDD.csv # Final predictions file
-└── README.md # Project documentation
+project-root/
+├── arima.R           # Script per la modellazione ARIMA (R)
+├── UCM.R             # Script per il modello a componenti non osservate (R)
+├── ML.py             # Script per forecasting tramite machine learning (Python)
+├── 865309_YYMMDD.csv # File con le previsioni finali
+└── README.md         
 
 ##  Author  
 **Davide Fabio Loreti** — Matricola **865309**  
