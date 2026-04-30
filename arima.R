@@ -12,7 +12,7 @@ cat("==========================================\n\n")
 
 # LOAD DATASET
 # Using file uploaded by user
-df <- read_csv("C:\\Users\\HP\\Desktop\\università\\DATA SCIENCE\\SECOND YEAR\\STREAMING DATA MANAGEMENT AND TIME SERIES ANALYSIS\\PROGETTO\\student_dataset.csv")
+df <- read_csv("...\\student_dataset.csv")
 
 # CLEANING AND SPLITTING
 df <- df %>%
