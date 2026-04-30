@@ -8,7 +8,7 @@ cat("UCM MODEL")
 cat("==========================================\n\n")
 
 
-df <- read_csv("C:\\Users\\HP\\Desktop\\università\\DATA SCIENCE\\SECOND YEAR\\STREAMING DATA MANAGEMENT AND TIME SERIES ANALYSIS\\PROGETTO\\student_dataset.csv")
+df <- read_csv("...\\student_dataset.csv")
 
 
 df <- df %>%
