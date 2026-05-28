@@ -245,7 +245,7 @@ plt.tight_layout()
 plt.show(block=False)
 
 # --- FORECAST STATISTICS ---
-print("\n===== FORECAST STATISTICS =====")
+print("\nFORECAST STATISTICS: ")
 print(f"LSTM:        Mean={pred_lstm_future.mean():.2f}, Std={pred_lstm_future.std():.2f}, Min={pred_lstm_future.min():.2f}, Max={pred_lstm_future.max():.2f}")
 print(f"KNN:         Mean={pred_knn_future.mean():.2f}, Std={pred_knn_future.std():.2f}, Min={pred_knn_future.min():.2f}, Max={pred_knn_future.max():.2f}")
 print(f"RandomForest Mean={pred_rf_future.mean():.2f}, Std={pred_rf_future.std():.2f}, Min={pred_rf_future.min():.2f}, Max={pred_rf_future.max():.2f}")
