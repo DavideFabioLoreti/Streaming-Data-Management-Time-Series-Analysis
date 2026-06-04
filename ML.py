@@ -15,11 +15,11 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 
-# --- SEED ---
+# SEED 
 np.random.seed(13)
 tf.random.set_seed(13)
 
-# --- CONFIG ---
+# CONFIG
 DATASET_PATH = r"student_dataset.csv"
 HOLIDAY_COUNTRY = 'AU'
 N_STEPS = 72
@@ -28,13 +28,13 @@ BATCH_SIZE = 64
 TEST_RATIO = 0.1
 FORECAST_HORIZON = 1439
 
-# --- LOAD DATA ---
+# LOAD DATA 
 df = pd.read_csv(DATASET_PATH)
 df['time'] = pd.to_datetime(df['time'], utc=True)
 df = df.set_index('time').sort_index()
 df = df.dropna(subset=['value']).copy()
 
-# --- FEATURE ENGINEERING ---
+# FEATURE ENGINEERING 
 df['hour'] = df.index.hour
 df['dayofweek'] = df.index.dayofweek
 df['is_weekend'] = (df['dayofweek'] >= 5).astype(int)
@@ -52,7 +52,7 @@ scaled = scaler.fit_transform(data)
 TARGET_COL = scaled.shape[1]-1
 n_features = scaled.shape[1]
 
-# --- CREATE SEQUENCES ---
+# SEQUENCES 
 def split_sequences(data, n_steps):
     X, y = [], []
     for i in range(len(data) - n_steps):
@@ -62,12 +62,12 @@ def split_sequences(data, n_steps):
 
 X, y = split_sequences(scaled, N_STEPS)
 
-# --- TRAIN / TEST SPLIT ---
+#TRAIN / TEST SPLIT 
 idx = int(len(X)*(1-TEST_RATIO))
 X_train, X_test = X[:idx], X[idx:]
 y_train, y_test = y[:idx], y[idx:]
 
-# --- LSTM MODEL ---
+#  LSTM MODEL DEFINITION
 lstm = Sequential([
     LSTM(128, return_sequences=True, input_shape=(N_STEPS, n_features)),
     Dropout(0.2),
@@ -78,7 +78,7 @@ lstm = Sequential([
 lstm.compile(optimizer='adam', loss='mse')
 lstm.fit(X_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE, verbose=1)
 
-# --- PREDICTIONS ON TEST SET ---
+#  PREDICTIONS 
 pred_lstm_scaled = lstm.predict(X_test).flatten()
 aux_test = X_test[:, -1, :-1]
 
@@ -88,7 +88,7 @@ def inverse_target(pred_scaled, aux_features):
 pred_lstm = inverse_target(pred_lstm_scaled, aux_test)
 y_test_true = inverse_target(y_test, aux_test)
 
-# --- KNN MODEL ---
+# KNN MODEL 
 X_train_flat = X_train.reshape((X_train.shape[0], -1))
 X_test_flat = X_test.reshape((X_test.shape[0], -1))
 knn = KNeighborsRegressor(n_neighbors=5)
@@ -96,19 +96,19 @@ knn.fit(X_train_flat, y_train)
 pred_knn_scaled = knn.predict(X_test_flat)
 pred_knn = inverse_target(pred_knn_scaled, aux_test)
 
-# --- RANDOM FOREST MODEL ---
+# RANDOM FOREST MODEL
 rf = RandomForestRegressor(n_estimators=300, max_depth=20, random_state=13)
 rf.fit(X_train_flat, y_train)
 pred_rf_scaled = rf.predict(X_test_flat)
 pred_rf = inverse_target(pred_rf_scaled, aux_test)
 
-# --- XGBOOST MODEL ---
+# XGBOOST MODEL 
 xgb = XGBRegressor(n_estimators=400, learning_rate=0.05, max_depth=7, subsample=0.8)
 xgb.fit(X_train_flat, y_train)
 pred_xgb_scaled = xgb.predict(X_test_flat)
 pred_xgb = inverse_target(pred_xgb_scaled, aux_test)
 
-# --- METRICS ---
+#  METRICS
 MAE_LSTM = mean_absolute_error(y_test_true, pred_lstm)
 MAE_KNN = mean_absolute_error(y_test_true, pred_knn)
 MAE_RF = mean_absolute_error(y_test_true, pred_rf)
@@ -120,7 +120,7 @@ print(f"KNN:         MAE={MAE_KNN:.3f}")
 print(f"RandomForest MAE={MAE_RF:.3f}")
 print(f"XGBoost:     MAE={MAE_XGB:.3f}")
 
-# --- PLOT COMPARISON ON TEST SET ---
+# PLOT COMPARISON ON TEST SET 
 plt.figure(figsize=(14,6))
 history = y_test_true[-200:]
 plt.plot(range(len(history)), history, label='Actual', linewidth=2, color='black')
@@ -136,7 +136,7 @@ plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show(block=False)
 
-# --- RECURSIVE FORECAST ---
+# RECURSIVE FORECAST 
 def recursive_forecast(model, last_seq, start_time, n_steps, horizon, model_type='sklearn'):
     """
     Recursive forecasting con aggiornamento dinamico delle feature temporali.
@@ -174,7 +174,7 @@ def recursive_forecast(model, last_seq, start_time, n_steps, horizon, model_type
 
     return np.array(preds)
 
-# --- GENERATE FUTURE FORECASTS ---
+# GENERATE FUTURE FORECASTS 
 print("\n===== GENERATING FUTURE FORECASTS =====")
 last_seq_full = scaled[-N_STEPS:].copy()
 start_time = df.index[-1]
@@ -185,7 +185,7 @@ pred_knn_future = recursive_forecast(knn, last_seq_full, start_time, N_STEPS, ho
 pred_rf_future = recursive_forecast(rf, last_seq_full, start_time, N_STEPS, horizon, model_type='sklearn')
 pred_xgb_future = recursive_forecast(xgb, last_seq_full, start_time, N_STEPS, horizon, model_type='sklearn')
 
-# --- INVERSE TRANSFORM ---
+# INVERSE TRANSFORM 
 future_times = pd.date_range(start=start_time, periods=horizon+1, freq='H')[1:]
 aux_future_list = []
 for t in future_times:
@@ -210,7 +210,7 @@ pred_xgb_future = np.maximum(pred_xgb_future, 0)
 
 print("\nForecast generation completed!")
 
-# --- PLOT FUTURE FORECASTS ---
+#PLOT FUTURE FORECASTS
 plt.figure(figsize=(16,7))
 plt.plot(df.index, df['value'], label='Actual Series', color='black', linewidth=1.5, alpha=0.7)
 future_index = pd.date_range(start=df.index[-1], periods=horizon+1, freq='H')[1:]
@@ -227,7 +227,7 @@ plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show(block=False)
 
-# --- ZOOM 168 STEP ---
+# ZOOM 168 STEP
 plt.figure(figsize=(14,6))
 zoom_horizon = min(168, horizon)
 plt.plot(df.index[-168:], df['value'].iloc[-168:], label='Actual (Last Week)', color='black', linewidth=2)
@@ -244,7 +244,7 @@ plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show(block=False)
 
-# --- FORECAST STATISTICS ---
+# FORECAST STATISTICS 
 print("\nFORECAST STATISTICS: ")
 print(f"LSTM:        Mean={pred_lstm_future.mean():.2f}, Std={pred_lstm_future.std():.2f}, Min={pred_lstm_future.min():.2f}, Max={pred_lstm_future.max():.2f}")
 print(f"KNN:         Mean={pred_knn_future.mean():.2f}, Std={pred_knn_future.std():.2f}, Min={pred_knn_future.min():.2f}, Max={pred_knn_future.max():.2f}")
@@ -252,7 +252,7 @@ print(f"RandomForest Mean={pred_rf_future.mean():.2f}, Std={pred_rf_future.std()
 print(f"XGBoost:     Mean={pred_xgb_future.mean():.2f}, Std={pred_xgb_future.std():.2f}, Min={pred_xgb_future.min():.2f}, Max={pred_xgb_future.max():.2f}")
 print(f"\nActual data: Mean={df['value'].mean():.2f}, Std={df['value'].std():.2f}, Min={df['value'].min():.2f}, Max={df['value'].max():.2f}")
 
-# --- SAVE RESULTS ---
+# SAVE RESULTS
 results_df = pd.DataFrame({
     'timestamp': future_index,
     'LSTM': pred_lstm_future,
@@ -262,7 +262,7 @@ results_df = pd.DataFrame({
 })
 # results_df.to_csv('future_forecasts.csv', index=False)
 # print("\nResults saved to 'future_forecasts.csv'")
-# --- PLOT: last 2 months observed + LSTM forecast only ---
+# PLOT: last 2 months observed + LSTM forecast only 
 last_obs_time = df.index[-1]
 start_2months = last_obs_time - pd.DateOffset(months=2)
 
