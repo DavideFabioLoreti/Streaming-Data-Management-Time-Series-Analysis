@@ -78,7 +78,7 @@ y_full_annual <- ts(df_obs$value, frequency = 24*365.25)
 
 #  FOURIER PARAMETERS 
 K_daily  <- 12  # 24 regressors
-K_weekly <- 6   # 8 regressors
+K_weekly <- 6   # 12 regressors
 K_annual <- 1   # 2 regressors
 
 cat("==== UPDATED MODEL PARAMETERS ====\n")
