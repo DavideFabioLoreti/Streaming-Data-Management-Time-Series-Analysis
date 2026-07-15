@@ -105,7 +105,7 @@ holidays_full_mat <- df_obs %>%
 xreg_full <- cbind(xreg_daily, xreg_weekly, xreg_annual, holidays_full_mat)
 
 cat("Regressor matrix dimensions:", dim(xreg_full), "\n")
-cat("  → Total regressors:", ncol(xreg_full), "\n\n")
+cat("   Total regressors:", ncol(xreg_full), "\n\n")
 
 # TRAIN FINAL ARIMA
 cat("==== TRAINING MODEL ====\n")
