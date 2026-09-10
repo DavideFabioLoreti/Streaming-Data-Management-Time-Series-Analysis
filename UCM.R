@@ -286,7 +286,7 @@ p3 <- forecast_results %>%
 print(p3)
 
 
-file_originale <- "C:\\Users\\HP\\Desktop\\università\\DATA SCIENCE\\SECOND YEAR\\STREAMING DATA MANAGEMENT AND TIME SERIES ANALYSIS\\PROGETTO\\865309_YYYMMDD.csv"
+file_originale <- "...\\865309_YYYMMDD.csv"
 
 df_originale <- read_csv(file_originale)
 
